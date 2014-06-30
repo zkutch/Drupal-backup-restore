@@ -7,7 +7,7 @@ use File::Copy::Recursive qw(dircopy );
 use Cwd;
 use POSIX qw(strftime);
 $|=1;
-# კარგია რომ იყოს შედარება რომ გადაკოპირებულია ფაილები სწორად და აქ  შეიძლება კარგი იყოს File::Copy::Vigilant 
+# to-do: for check copy status File::Copy::Vigilant 
 
 
 	my $working_dir = cwd();
@@ -95,20 +95,20 @@ sub backupi
 	print "\n";
 		
 	if($ARGV[0] eq "-bc")
-		{ #დაიწყო კონფიგურაციიდან კითხვის ფაზა
+		{ #reading from configuration
 		
 			cvladebi_configuraciidan($ref_working_dir, $ref_dir_origin, $ref_dir_destination, $ref_pg_data_base, "b", $ref_working_file);
 			
-		} #დამთავრდა კონფიგურაციიდან კითხვის ფაზა
+		} #finish reading from configuration
 	else 
-		{ #დაიწყო ინტერაქტიული ფაზა
+		{ #start interactive step
 		
 			cvladebi_interaqtividan($ref_working_dir, $ref_dir_origin, $ref_dir_destination, $ref_pg_data_base, "b", $ref_working_file);
 			
-		} #დამთავრდა ინტერაქტიული ფაზა
+		} #finish interactive step
 	
 	
-	# ყველა ცვლადი განისაზღვრა, დაიწყო მუშაობა
+	# all variables done, start working
 	
 	direqtoriebis_kopireba($dir_origin, $dir_destination);
 	
@@ -126,20 +126,20 @@ sub restorei
 	print "\n";
 		
 	if($ARGV[0] eq "-rc")
-		{ #დაიწყო კონფიგურაციიდან კითხვის ფაზა
+		{ #reading from configuration
 		
 			cvladebi_configuraciidan($ref_working_dir, $ref_dir_origin, $ref_dir_destination, $ref_pg_data_base, "r", $ref_working_file);
 			
-		} #დამთავრდა კონფიგურაციიდან კითხვის ფაზა
+		} #finish reading from configuration
 	else 
-		{ #დაიწყო ინტერაქტიული ფაზა
+		{ #start interactive step
 		
 			cvladebi_interaqtividan($ref_working_dir, $ref_dir_origin, $ref_dir_destination, $ref_pg_data_base, "r", $ref_working_file);
 			
-		} #დამთავრდა ინტერაქტიული ფაზა
+		} #finish interactive step
 	
 	
-	# ყველა ცვლადი განისაზღვრა, დაიწყო მუშაობა
+	# all variables done, start working
 	
 	direqtoriebis_kopireba($dir_origin, $dir_destination);
 	
@@ -155,8 +155,8 @@ sub restorei
 
 
 sub cvladebi_interaqtividan
-	{ #გადაეცემა რეფერენსები 5 სამუშაო ცვლადზე $ref_working_dir, $ref_dir_origin, $ref_dir_destination, $ref_pg_data_base, , $ref_working_file
-	   # და ოთხივეში ბრუნდება მნიშვნელობები
+	{ #working variables $ref_working_dir, $ref_dir_origin, $ref_dir_destination, $ref_pg_data_base, , $ref_working_file
+	   #references
 		my $answer="";
 		my $cfg_exist = 0;
 		my $fh;
@@ -331,8 +331,8 @@ sub cvladebi_interaqtividan
 
 
 sub cvladebi_configuraciidan
-	{ #გადაეცემა რეფერენსები 5 სამუშაო ცვლადზე $ref_working_dir, $ref_dir_origin, $ref_dir_destination, $ref_pg_data_base, , $ref_working_file
-	   # და ოთხივეში ბრუნდება მნიშვნელობები და გადაეცემა ერთი ასო b ან r რომლის ცვლადების თავში დასმით განისაზღვრება ბეკაპია თუ რესტორე
+	{ #working 5 variables references $ref_working_dir, $ref_dir_origin, $ref_dir_destination, $ref_pg_data_base, , $ref_working_file
+	   # first letter b is for backup and  r for restory
 		unless (-e "${$_[0]}/drupal_br.cfg" || -r "${$_[0]}/drupal_br.cfg" )
 			{
 				print "configuration file  ${$_[0]}/drupal_br.cfg does not exist or is not readable. Without file for backup I cannot work.\nExit..\n";
@@ -417,7 +417,7 @@ sub cvladebi_configuraciidan
 	}
 
 sub direqtoriebis_kopireba
-	{   #გადაეცემა ორი დირექტორია:  $_[0] საწყისი და $_[1] საბოლოო და ხდება კოპირება, ლინკები ნაცვლდება ფაილებით
+	{   #variables are 2 directories:  $_[0] source and $_[1] destination, when copy links changes to files(preserve)
 		print "\n";
 		print "Start copying directory $_[0] to $_[1]\n";
 		my $copy_link_old_value = $File::Copy::Recursive::CopyLink;
@@ -445,7 +445,7 @@ sub direqtoriebis_kopireba
 
 
 sub check_user
-	{ #გადაეცემა $_[0] -ში იუზერის სახელი, რომელიც მოწმდება არის თუ არა /etc/passwd-ში
+	{ #variable $_[0] user name, check if exist in /etc/passwd
 		
 	my $etc_passwd = '/etc/passwd';
 	open(FILE, $etc_passwd) or die "Could not read from $etc_passwd, program halting.";
@@ -473,7 +473,7 @@ sub check_user
 
 
 sub dumpi_database
-	{ # გადაეცემა $pg_data_base, $working_file, $postgres_id  შესაბამისად $_[0], $_[1], $_[2]-ში
+	{ # variables $pg_data_base, $working_file, $postgres_id  in $_[0], $_[1], $_[2]-ში
 		my $answer;
 		unless(-e $_[1])
 			{
@@ -550,7 +550,7 @@ sub dumpi_database
 
 
 sub restore_database
-	{ # გადაეცემა $pg_data_base, $working_file, $postgres_id შესაბამისად $_[0], $_[1], $_[2]-ში
+	{ # variables $pg_data_base, $working_file, $postgres_id in $_[0], $_[1], $_[2]
 		my $answer; 
 		$> =  $_[2] or die "cannot change ".'$EFFECTIVE_USER_ID  or $EUID'.", because error is ".$!;
 		my $s1 =`psql -l `; #|  awk -F "|"  '{ print $s2 }' `;
@@ -648,7 +648,3 @@ sub restore_database
 		
 	}
 
-
-# opendir (DIRHANDLE, $dir) or die "directory $dir opening error is: $!";
-# my @files = grep { !/^\.\.?/ } readdir(DIRHANDLE);
-# # system("cp -Lrp $dir /home");
